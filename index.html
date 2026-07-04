@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="FindSport Frontend — современная веб-панель на SvelteKit для работы с соревнованиями, заявками, федерациями и профилями пользователей."
+    />
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta name="theme-color" content="#0f172a" />
+    <title>FindSport Frontend</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #020617;
+        --panel: rgba(15, 23, 42, 0.82);
+        --panel-2: rgba(30, 41, 59, 0.7);
+        --text: #f8fafc;
+        --muted: #cbd5e1;
+        --accent: #38bdf8;
+        --accent-2: #8b5cf6;
+        --border: rgba(255, 255, 255, 0.12);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(56, 189, 248, 0.24), transparent 28%),
+          radial-gradient(circle at top right, rgba(139, 92, 246, 0.18), transparent 32%),
+          linear-gradient(135deg, #020617 0%, #111827 60%, #0f172a 100%);
+        min-height: 100vh;
+      }
+
+      a { color: inherit; text-decoration: none; }
+      .container {
+        width: min(1120px, calc(100% - 2rem));
+        margin: 0 auto;
+      }
+
+      .hero {
+        padding: 4.5rem 0 2rem;
+      }
+
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0 0;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .brand-mark {
+        width: 2.3rem;
+        height: 2.3rem;
+        display: grid;
+        place-items: center;
+        border-radius: 0.9rem;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        box-shadow: 0 10px 30px rgba(56, 189, 248, 0.25);
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 2rem;
+        align-items: center;
+        padding: 2.2rem 0 2.6rem;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.45rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(255,255,255,0.04);
+        color: var(--muted);
+        font-size: 0.92rem;
+        margin-bottom: 1rem;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 3.8vw, 3.4rem);
+        line-height: 1.05;
+        margin: 0 0 1rem;
+      }
+
+      .hero p {
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: var(--muted);
+        margin: 0 0 1.4rem;
+        max-width: 660px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+        margin-top: 1.4rem;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.8rem 1.15rem;
+        border-radius: 999px;
+        font-weight: 600;
+        transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+      }
+
+      .btn:hover { transform: translateY(-2px); }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: white;
+        box-shadow: 0 12px 30px rgba(56, 189, 248, 0.22);
+      }
+      .btn-secondary {
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.04);
+        color: var(--text);
+      }
+
+      .hero-card,
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        box-shadow: 0 20px 50px rgba(2, 6, 23, 0.4);
+        backdrop-filter: blur(18px);
+      }
+
+      .hero-card {
+        border-radius: 1.3rem;
+        padding: 1.4rem;
+      }
+
+      .hero-card h3 {
+        margin: 0 0 0.8rem;
+        font-size: 1.05rem;
+      }
+
+      .metric-list {
+        display: grid;
+        gap: 0.9rem;
+        margin-top: 1rem;
+      }
+
+      .metric {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.9rem 1rem;
+        border-radius: 0.9rem;
+        background: var(--panel-2);
+      }
+
+      .metric strong { font-size: 1.05rem; }
+      .metric span { color: var(--muted); font-size: 0.92rem; }
+
+      section { padding: 1.2rem 0 3rem; }
+      .section-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      .section-title h2 { margin: 0; font-size: 1.35rem; }
+      .section-title a { color: var(--accent); font-size: 0.95rem; }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .card {
+        padding: 1.2rem;
+        border-radius: 1rem;
+        background: var(--panel);
+        border: 1px solid var(--border);
+      }
+
+      .card h3 { margin: 0 0 0.4rem; font-size: 1.02rem; }
+      .card p { margin: 0; color: var(--muted); line-height: 1.65; }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        margin-top: 1rem;
+      }
+
+      .chip {
+        padding: 0.45rem 0.7rem;
+        border-radius: 999px;
+        background: rgba(56, 189, 248, 0.12);
+        color: #bae6fd;
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        font-size: 0.92rem;
+      }
+
+      .code-block {
+        margin-top: 1rem;
+        padding: 1rem 1.1rem;
+        border-radius: 0.95rem;
+        background: rgba(2, 6, 23, 0.8);
+        border: 1px solid var(--border);
+        overflow-x: auto;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.92rem;
+      }
+
+      footer {
+        padding: 1rem 0 2.2rem;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      @media (max-width: 860px) {
+        .hero-grid { grid-template-columns: 1fr; }
+        .cards { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="container">
+        <nav class="navbar">
+          <a class="brand" href="#top">
+            <span class="brand-mark">⚡</span>
+            <span>FindSport Frontend</span>
+          </a>
+          <div class="actions" style="margin-top: 0;">
+            <a class="btn btn-secondary" href="https://github.com/SteppingCode/hackathon2024-frontend/blob/main/README.md">Открыть README</a>
+            <a class="btn btn-primary" href="https://github.com/SteppingCode/hackathon2024-frontend" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </nav>
+
+        <div class="hero-grid" id="top">
+          <div>
+            <div class="eyebrow">SvelteKit • Tailwind • FastAPI</div>
+            <h1>Современная веб-панель для соревнований и пользовательских сценариев.</h1>
+            <p>
+              FindSport Frontend — это аккуратный интерфейс для управления заявками,
+              соревнованиями, федерациями, административными задачами и профилями пользователей.
+              Проект собран на SvelteKit с современным UI и удобной интеграцией с backend.
+            </p>
+            <div class="actions">
+              <a class="btn btn-primary" href="#features">Посмотреть возможности</a>
+              <a class="btn btn-secondary" href="#stack">Технологический стек</a>
+            </div>
+          </div>
+
+          <div class="hero-card">
+            <h3>Что реализовано</h3>
+            <div class="metric-list">
+              <div class="metric">
+                <span>Соревнования</span>
+                <strong>+ UI</strong>
+              </div>
+              <div class="metric">
+                <span>Заявки</span>
+                <strong>+ workflow</strong>
+              </div>
+              <div class="metric">
+                <span>Админка</span>
+                <strong>+ сценарии</strong>
+              </div>
+              <div class="metric">
+                <span>Профиль</span>
+                <strong>+ настройки</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section id="features">
+        <div class="section-title">
+          <h2>Ключевые возможности</h2>
+        </div>
+        <div class="cards">
+          <article class="card">
+            <h3>Удобная работа с соревнованиями</h3>
+            <p>Интерфейс с карточками, списками и диалогами помогает быстро ориентироваться в заявках и соревнованиях.</p>
+          </article>
+          <article class="card">
+            <h3>Авторизация и профиль</h3>
+            <p>Пользовательские сценарии, настройки профиля и понятный путь взаимодействия с системой.</p>
+          </article>
+          <article class="card">
+            <h3>Административные сценарии</h3>
+            <p>Поддержка задач по работе с федерациями, управлению пользователями и другими операциями.</p>
+          </article>
+          <article class="card">
+            <h3>Современный UX</h3>
+            <p>Визуальный стиль основан на Tailwind и UI-компонентах для быстрых и приятных взаимодействий.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="stack">
+        <div class="section-title">
+          <h2>Технологический стек</h2>
+        </div>
+        <div class="panel" style="padding: 1.2rem; border-radius: 1rem;">
+          <div class="chip-row">
+            <span class="chip">SvelteKit</span>
+            <span class="chip">Svelte 5</span>
+            <span class="chip">Tailwind CSS</span>
+            <span class="chip">shadcn/ui</span>
+            <span class="chip">Axios</span>
+            <span class="chip">Lucide Svelte</span>
+            <span class="chip">ESLint</span>
+            <span class="chip">Prettier</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Локальный запуск</h2>
+        </div>
+        <div class="panel" style="padding: 1.2rem; border-radius: 1rem;">
+          <p style="margin: 0; color: var(--muted); line-height: 1.7;">
+            Для локальной разработки понадобится Node.js 18+ и pnpm или npm. После установки зависимостей приложение можно запустить в режиме разработки.
+          </p>
+          <div class="code-block">
+            <code>pnpm install<br />pnpm dev</code>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container" style="border-top: 1px solid var(--border); padding-top: 1rem;">
+        <p style="margin: 0;">
+          Опубликовано на <strong>hackathon2024.evgeniu-s.ru</strong> · Frontend часть проекта FindSport
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
