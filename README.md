@@ -8,6 +8,10 @@
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)](https://fastapi.tiangolo.com)
 [![Status](https://img.shields.io/badge/status-finished-success)](https://github.com/SteppingCode/hackathon2024-frontend)
 
+---
+
+![Demo](./demo.gif)
+
 </div>
 
 FindSport Frontend — современная веб-панель на SvelteKit, предназначенная для взаимодействия с RESTful API и обеспечения удобного пользовательского опыта в системе FindSport. Проект объединяет современный UI, гибкую архитектуру компонентов и работу с административными сценариями, соревнованиями, федерациями и профилями пользователей.
